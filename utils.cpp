@@ -3,15 +3,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
-//#include "cstring.h"
+#include <cstring>
 #include "utils.h"
 #include "Time.h"
-
+#include "cstring.h"
 using namespace std;
 namespace sdds {
-const int size = 5;
    bool debug = false;  // made global in utils.h
-   int getTime() {
+   int getTime() {  
       int mins = -1;
       if (debug) {
          Time t(0);
@@ -37,114 +36,58 @@ const int size = 5;
       return mins;
    }
 
-     int strLen(const char* s)
-    {
-        int lenght = 0;
-        int x;
+   int getInt(const char* prompt) {
+       string user_input;
+       bool needInt = true;
+       bool invalidInt;
+       bool notOnlyInt;
+       unsigned i;
+       if (prompt != nullptr) cout << prompt; 
+       getline(cin, user_input);
+       while (needInt) {
+           invalidInt = false;
+           notOnlyInt = false;
+           if(!isdigit(user_input.c_str()[0])) invalidInt = true;
+           for (i = 0; i < user_input.length() && !invalidInt && !notOnlyInt; i++) {
+               if (!isdigit(user_input.c_str()[i]) && i != 0) notOnlyInt = true;
+           }
+           if (invalidInt) {
+               cout << "Bad integer value, try again: ";
+               getline(cin, user_input);
+           }
+           if (notOnlyInt) {
+               cout << "Enter only an integer, try again: ";
+               getline(cin, user_input);
+           }
+           if (!invalidInt && !notOnlyInt) needInt = false;
+       }
 
-        for (x = 0; s[x] != 0; x++)
-        {
-            lenght++;
-        } return (lenght);
-    }
+       return atoi(user_input.c_str());
+   }
 
+   int getInt(int min, int max, const char* prompt, const char* errorMessage, bool showRangeAtError) {
+       int userInput = getInt(prompt);
+       bool invalid = true;
+       while (invalid) {
+           if (userInput >= min && userInput <= max) invalid = false;
+           else {
+               if (errorMessage != nullptr) cout << errorMessage;
+               else getInt(prompt);
+               if (showRangeAtError) cout << "[" << min << " <= value <= " << max << "]: ";
+               userInput = getInt();
+           }
+       }
+       return userInput;
+   }
 
-int getInt(){
-    
-    char entry[size] {};
-    
-    string str;
- 
-    getline(cin, str);
-    for(int i = 0; i < size; i++){
-        entry[i] = str[i];
-    }
-    //cout << "proverka stroki " << entry << endl;
-    
-    int check = 1;
-    bool symbol = 0;
-    int symbolcounter = 0;
-    int temp = atoi(entry);
+   char* getcstr(const char* prompt, istream& istr, char delimiter) {
+       string str;
+       char* cstr;
+       if (prompt != nullptr) cout << prompt;
 
-    
-    do {
-    long int x = sdds::strLen(entry);
-    int counter = 0;
-        //cout << "проверка длины " << sizeof(entry) << endl;
-        
-    for (int i = 0; entry[i] != '\0'; i++){
-        if(std::isdigit(entry[i]) && !isspace(entry[i])) counter++;
-        else {symbolcounter++; symbol = 1;}
-    }
-        
-            //если не все знаки = цифры, просим ещё циферок
-        if (counter != x || temp == 0 || symbol == 1){
-            
-            if (symbol == 1 && symbolcounter > 0 && counter > 0){
-                cout << "Enter only an integer, try again: ";
-            }
-            
-            else if (counter != x || temp == 0){
-                cout << "Bad integer value, try again: ";
-            }
-            
-            for(int i=0;i<size;i++){entry[i] = '\0';}
-            
-            //повторный ввод
-            //cin >> entry;
-            
-            symbol = 0;
-            
-            getline(cin, str);
-            for(int i = 0; i < size; i++){
-                entry[i] = str[i];
-            }
-            temp = atoi(entry);
-        }
-            //если все цифры, то всё ок "приятного пути"
-        else{
-            check = 0;
-        }
-    } while (check != 0);
-    
-    int result = atoi(entry);
-    for( int i = 0; i < size; i++){
-        entry[i] = '\0';
-        str[i] = '\0';
-    }
-    return result;
-};
-
-int getInt(const char* prompt){
-    cout << *prompt;
-    int result = getInt();
-    return result;
-}
-
-int getInt(int min, int max, const char* prompt, const char* errorMessage, bool showRangeAtError){
-    
-    int num = getInt(prompt);
-    
-    while (max < num || num < min) {
-        if (errorMessage != nullptr) cout << errorMessage;
-        if (showRangeAtError) cout << "[" << min << " <= value <= " << max<< "]: ";
-        //cout << "checker 3: " << num << endl;
-        num = getInt();
-    }
-    return num;
- };
-
-    char* getcstr(const char* prompt, std::istream& istr, char delimiter){
-    
-    cout << prompt;
-    string input;
-    getline(istr, input);
-    
-    char *text = new char[input.length()];
-    text[input.length()] = delimiter; // последний знак
-        for (int i = 0; i < input.length(); i++) {
-            text[i] = input[i];
-        }
-        return text;
-    }
+       getline(istr, str);
+       cstr = new char[str.length() + 1];
+       strcpy(cstr, str.c_str());
+       return cstr;
+   }
 }
