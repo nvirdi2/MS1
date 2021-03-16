@@ -3,25 +3,19 @@
 #include <iostream>
 namespace sdds {
    class Time {
-       unsigned int m_min;
+      unsigned int m_min;
    public:
-       
       Time& setToNow();
-
       Time(unsigned int min = 0);
-
       std::ostream& write(std::ostream& ostr) const;
       std::istream& read(std::istream& istr);
 
-      Time& operator=(unsigned int val);
-
-      
       Time& operator-=(const Time& D);
       Time operator-(const Time& D)const;
       Time& operator+=(const Time& D);
       Time operator+(const Time& D)const;
 
-      
+      Time& operator=(unsigned int val);
       Time& operator *= (unsigned int val);
       Time& operator /= (unsigned int val);
       Time operator *(unsigned int val)const;
@@ -29,12 +23,6 @@ namespace sdds {
 
       operator unsigned int()const;
       operator int()const;
-
-
-      ///
-      std::ostream& view(std::ostream& ostr)const;
-      //
-      unsigned stoi(const char* s);
    };
    std::ostream& operator<<(std::ostream& ostr, const Time& D);
    std::istream& operator>>(std::istream& istr, Time& D);
