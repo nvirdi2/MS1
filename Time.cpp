@@ -1,104 +1,153 @@
+#include <cmath>
+#include <string>
+#include "cstring.h"
 #include "Time.h"
 #include "utils.h"
+
 using namespace std;
 namespace sdds {
-    Time& Time::setToNow() { m_min = getTime(); return *this; } //cout << "check setToNow(): " << m_min / 60 << ":" << m_min - m_min / 60 * 60;  m_min = getTime();  cout << "check: getTime() " << m_min / 60 << ":" << m_min - m_min / 60 * 60 << "check end" << endl;
-    Time::Time(unsigned int min) { m_min = min; } //cout << m_min << endl;
+	Time& Time::setToNow() {
+		*this = getTime();
+		return *this;
+	}
 
-    std::ostream& Time::write(std::ostream& ostr) const { return cout; }
-    std::istream& Time::read(std::istream& istr) { 
-        
-        string input, hourString, minuteString;
-        istr >> input;
+	Time::Time(unsigned int min) {
+		m_min = min;
+	}
 
-        istr.setstate(std::ios_base::goodbit);//std::ios_base::
+	ostream& Time::write(ostream& ostr)const {
+		double hour = 0;
+		double min;
+		if (m_min >= 60) hour = floor(m_min / 60);
+		min = m_min - (60 * hour);
+		ostr.width(2);
+		ostr.fill('0');
+		ostr << hour;
+		ostr << ":";
+		ostr.width(2);
+		ostr.fill('0');
+		ostr << min;
+		return ostr;
+	}
 
-        for (int i = 0; i < input.length(); i++) {
+	istream& Time::read(istream& istr) {
+		string hours;
+		string minutes;
+		char c_input = '\0';
+		string user_input;
 
-            if (input[i] == ':' || input[i] == '1' || input[i] == '2' || input[i] == '3' || input[i] == '4' || input[i] == '5' || input[i] == '6' || input[i] == '7' || input[i] == '8' || input[i] == '9' || input[i] == '0'){
-                //continue;
-            }
-            else {
-                //std::cout << input[i] << endl; //// x
-                istr.setstate(std::ios_base::failbit);
-                return istr;  
-            }
-        }
-                      //std::cout <<"!!!!  data  is good, input is: "<< input << endl; //// x
+		istr >> user_input;
 
-        for (int i = 0; i < input.length(); i++) { // write input in to hour/minutes string - transfer to write function
 
-            if(input[i] == ':') { // do nothing while havnig ":" sign (avoid it)
 
-                hourString = input.substr(0, i);
-                i++;                                                                  // cout << "$$" << i << endl;  // x
-                minuteString = input.substr(i, (input.length() - 1));
-                                                                                  // cout << "$$" << i << endl;  /// x
-                break;// i = input.length(); // block the looping
-            } 
-        }            //std::cout << " check hourString:" << hourString << "minuteString:" << minuteString << endl;   /// DISLAY h / m 
-                    
-        unsigned hours, minutes;
+		for (unsigned i = 0; i < user_input.length(); i++) {
+			c_input = user_input[i];
+			if (!(c_input == ':' || c_input == '0' || c_input == '1' || c_input == '2' || c_input == '3' || c_input == '4' || c_input == '5' || c_input == '6' || c_input == '7' || c_input == '8' || c_input == '9')) {
+				istr.setstate(std::ios_base::failbit);
+				return istr;
+			}
+		}
 
-        hours = stoi(hourString.c_str()); minutes = stoi(minuteString.c_str());
-                    //std::cout << " check hours:" << hours << "minutes:" << minutes << endl;   /// DISLAY h / m 
-        m_min = hours*60 + minutes;
+		for (unsigned i = 0; i < user_input.length(); i++) {
+			c_input = user_input[i];
+			if (c_input == ':') {
+				hours = user_input.substr(0, i);
+				i++;
+				minutes = user_input.substr(i, (user_input.length() - 1));
+				break;
+			}
+		}
 
-        //istr << m_min;///////
-                    //std::cout << "check  m_min:" << m_min << endl; /// DISLAY m_min
-        return istr;
-    }
+		m_min = (stoi(hours.c_str()) * 60) + stoi(minutes.c_str());
 
-    /// #################################### STOI ################################
-    unsigned Time::stoi(const char* s) {
+		return istr;
+	}
 
-        unsigned i = 0;
+	Time& Time::operator-=(const Time& D) {
+		if (m_min > D.m_min) m_min -= D.m_min;
+		else {
+			double hour= 0, min, d_hour = 0, d_min;
 
-        while (*s >= '0' && *s <= '9'){
-            i = i * 10 + (*s - '0');
-            s++;
-        }
-        return i;
-    }
-    /// #################################### STACK OVERFLOW ################################
-    Time& Time::operator=(unsigned int val) { m_min = val; return *this; }
-    Time& Time::operator *= (unsigned int val) { m_min = m_min * val; return *this; }
-    Time& Time::operator /= (unsigned int val) { m_min = m_min / val; return *this; }
-    Time Time::operator *(unsigned int val)const { Time Temp; Temp.m_min = m_min; Temp.m_min = m_min * val; return Temp; }
-    Time Time::operator /(unsigned int val)const { Time Temp; Temp.m_min = m_min; Temp.m_min = m_min / val; return Temp; }
-    Time Time::operator+(const Time& Input)const { Time TempThis; TempThis.m_min = m_min + Input.m_min; return TempThis; }
-    Time& Time::operator+=(const Time& Input) { *this = m_min + Input.m_min; return *this; }
-    Time Time::operator-(const Time& Input)const { Time TempThis, TempOut; TempThis.m_min = m_min; TempOut.m_min= Input.m_min; while (Input.m_min > TempThis.m_min){ TempThis.m_min += 1440;} TempOut.m_min = TempThis.m_min - Input.m_min; return TempOut; }
-    Time& Time::operator-=(const Time& Input) { Time TempThis, TempOut; TempThis.m_min = m_min; while (Input.m_min > TempThis.m_min) { TempThis.m_min += 1440; } *this = TempThis.m_min - Input.m_min; return *this; }
+			if (m_min >= 60) hour = floor(m_min / 60);
+			min = m_min - (60 * hour);
+			if (D.m_min >= 60) d_hour = floor(D.m_min / 60);
+			d_min = D.m_min - (60 * d_hour);
 
-    Time::operator unsigned int()const { return 0; }
-    Time::operator int()const { int output = m_min;  return output; }
+			if (min < d_min) {
+				min += 60;
+				min -= d_min;
+				hour--;
+			}
+			else min -= d_min;
 
-    std::ostream& operator<<(std::ostream& ostr, const Time& O) { O.view(ostr); return ostr; }
-    std::ostream& Time::view(std::ostream& ostr)const {
-        // ***cout << m_min;
-        //cout << "cheeeeeeeeeeek: " << m_min / 60 << ":" << m_min - m_min / 60 * 60;
+			double addTime = ceil(d_hour / 24);
+			hour += 24.0 * addTime;
+			hour -= d_hour;
+			m_min = int(min + (hour * 60));
+		}
 
-        unsigned int hours = m_min / 60;
-        unsigned int minutes = m_min - hours * 60;
+		return *this;
+	}
 
-                       //cout << "TIME: " <<hours << ":" << minutes << endl;
-        //if(hours < 10) { ostr << 0; };
-        //ostr << hours << ":"; if (minutes < 10) { ostr << 0; }; ostr << minutes; //<<m_min;//
-        
-        if (hours < 10) { cout << 0; };
-        cout << hours << ":"; if (minutes < 10) { cout << 0; }; ostr << minutes; //<<m_min;//
-        //string output;
-        //output.append(hours, minutes);
-        //cout << "appended sting" << output << endl;
-        //ostr << output;
-        return ostr;
-        
-    }
-    std::istream& operator>>(std::istream& istr, Time& Object_for_Input) { 
-        
-        Object_for_Input.read(istr);
+	Time Time::operator-(const Time& D)const {
+		Time temp(m_min);
+		temp -= D;
+		return temp;
+	}
 
-        return istr;
-    }
+	Time& Time::operator+=(const Time& D) {
+		m_min += D.m_min;
+		return *this;
+	}
+
+	Time Time::operator+(const Time& D)const {
+		Time temp(m_min);
+		temp += D;
+		return temp;
+	}
+
+	Time& Time::operator=(unsigned int val) {
+		m_min = val;
+		return *this;
+	}
+
+	Time& Time::operator*=(unsigned int val){
+		m_min *= val;
+		return *this;
+	}
+
+	Time Time::operator*(unsigned int val)const {
+		Time temp(m_min);
+		temp *= val;
+		return temp;
+	}
+
+	Time& Time::operator/=(unsigned int val) {
+		m_min /= val;
+		return *this;
+	}
+
+	Time Time::operator/(unsigned int val)const {
+		Time temp(m_min);
+		temp /= val;
+		return temp;
+	}
+
+	Time::operator int()const {
+		return int(m_min);
+	}
+
+	Time::operator unsigned int()const {
+		return m_min;
+	}
+
+	ostream& operator<<(ostream& ostr, const Time& D) {
+		D.write(ostr);
+		return ostr;
+	}
+
+	istream& operator>>(istream& istr, Time& D) {
+		D.read(istr);
+		return istr;
+	}
 }
