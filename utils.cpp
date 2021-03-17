@@ -1,8 +1,3 @@
-// Milestone: 1
-// Date: 2021/3/16
-// Author: Jaan Javed
-// Student Number: 100131192
-///////////////////////////////////////////////////
 #include <iostream>
 #include <string>
 #include <cstring>
