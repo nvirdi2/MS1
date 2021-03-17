@@ -1,10 +1,12 @@
 #include <iostream>
-#include <string>
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
+#include <string>
+
 #include "utils.h"
 #include "Time.h"
+
 using namespace std;
 namespace sdds
 {
@@ -50,11 +52,12 @@ namespace sdds
     int getInt(int min, int max, const char *prompt, const char *errorMessage, bool showRangeAtError)
     {
         int userInput = getInt(prompt);
-        bool invalid{true};
-        while (invalid)
+        bool flag{true};
+        
+        while (flag)
         {
             if (userInput <= max && userInput >= min)
-                invalid = false;
+                flag = false;
             else
             {
                 if (errorMessage != nullptr)
