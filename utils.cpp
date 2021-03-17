@@ -6,7 +6,6 @@
 #include <cstring>
 #include "utils.h"
 #include "Time.h"
-#include "cstring.h"
 using namespace std;
 namespace sdds {
    bool debug = false;  // made global in utils.h
