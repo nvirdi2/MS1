@@ -1,7 +1,7 @@
 // Name: Navdeep Virdi
 // Seneca email: nvirdi2@myseneca.ca
 // Student ID: 166485193
-// Date: March 16, 2021
+// Date: March 22, 2021
 
 //I have done all the coding by myself and only copied the code that my professor provided to complete my workshops and assignments.
 
@@ -62,56 +62,59 @@ namespace sdds
 
     int getInt(const char *prompt)
     {
-        string UserInput;
-
-        unsigned x;
-
-        bool Flag{true};
-        bool notInteger;
-        bool Integerv;
+        int check = 0;
+        bool num_found = false;
+        int num;
 
         if (prompt != nullptr)
-        {
             cout << prompt;
-        }
+        string line;
+        getline(cin, line);
+        line = line + '\n';
+        bool neg = false;
 
-        getline(cin, UserInput);
+        while (check == 0 || check == 1) {
+            num = 0;
+            int i = 0;
+            neg = false;
+            num_found = false;
+            while (line[i]) {
+                if (line[i] == '-')
+                    neg = true;
+                else if (line[i] < '0' || line[i] > '9') {
+                    if (num_found == false) {
+                        cout << "Oye Hoye: " << line[i] << endl;
+                        check = 0;
+                    }
 
-        while (Flag)
-        {
-            Integerv = false;
-            notInteger = false;
+                    else if (line[i] == '\n')
+                        check = 2;
+                    else
+                        check = 1;
+                    break;
+                }
 
-            if (!isdigit(UserInput.c_str()[0]))
-            {
-                Integerv = true;
+                else {
+                    num_found = true;
+                    num = num * 10 + line[i] - '0';
+                }
+
+                i++;
             }
 
-                for (x = 0; x < UserInput.length() && !Integerv && !notInteger; x++)
-                {
-                    if (!isdigit(UserInput.c_str()[x]) && x != 0)
-                    {
-                        notInteger = true;
-                    }
-                }
-            
-                    if (Integerv)
-                    {
-                        cout << "Bad integer value, try again: ";
-                        getline(cin, UserInput);
-                    }
-            
-                        if (notInteger)
-                        {
-                            cout << "Enter only an integer, try again: ";
-                            getline(cin, UserInput);
-                        }
-                            
-                            if (!Integerv && !notInteger)
-                            {
-                                Flag = false;
-                            }
-        } return atoi(UserInput.c_str());
+            if (neg)
+                num = 1 * num;
+            if (check != 2) {
+                if (check == 0)
+                    cout << "Bad integer value, try again: ";
+                else
+                    cout << "Enter only an integer, try again: ";
+                getline(cin, line);
+                line = line + '\n';
+            }
+        }
+
+        return num;
     }
 
     char *getcstr(const char *prompt, istream &istr, char delimiter)
@@ -136,34 +139,67 @@ namespace sdds
 
     int getInt(int min, int max, const char *prompt, const char *errorMessage, bool showRangeAtError)
     {
-        bool flag{true};
-        int inputFromUser = getInt(prompt);
+        int check = 0;
+        bool num_found = false;
+        int num;
 
-        while (flag)
-        {
-            if (inputFromUser <= max && inputFromUser >= min)
-            {
-                flag = false;
-            }
-                else
-                {
-                    if (errorMessage != nullptr)
-                    {
-                        cout << errorMessage;
-                    }
+        if (prompt != nullptr)
+            cout << prompt;
+        string line;
+        getline(cin, line);
+        line = line + '\n';
+        bool neg = false;
 
+        while (check == 0 || check == 1) {
+            neg = false;
+            num = 0;
+            int i = 0;
+            num_found = false;
+
+            while (line[i]) {
+                if (line[i] == '-')
+                    neg = true;
+                else if (line[i] < '0' || line[i] > '9') {
+                    if (num_found == false)
+                        check = 0;
+                    else if (line[i] == '\n')
+                        check = 2;
                     else
-                    {
-                        getInt(prompt);
-                    }
+                        check = 1;
+                    break;
+                }
 
-                    if (showRangeAtError)
-                    {
-                        cout << "[" << min << " <= value <= " << max << "]: ";
-                    }
+                else {
+                    num_found = true;
+                    num = num * 10 + line[i] - '0';
+                }
 
-                inputFromUser = getInt();
+                i++;
             }
-        } return inputFromUser;
+
+            if (neg)
+                num = -1 * num;
+            if (check != 2) {
+                if (check == 0)
+                    cout << "Bad integer value, try again: ";
+                else
+                    cout << "Enter only an integer, try again: ";
+                getline(cin, line);
+                line = line + '\n';
+            }
+
+            else if (num < min || num > max) {
+                check = 1;
+                if (errorMessage != nullptr)
+                    cout << errorMessage;
+                if (showRangeAtError) {
+                    cout << "[" << min << " <= value <= " << max << "]: ";
+                }
+
+                getline(cin, line);
+                line = line + '\n';
+            }
+        }
+        return num;
     }
 }
