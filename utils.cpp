@@ -119,22 +119,15 @@ namespace sdds
 
     char *getcstr(const char *prompt, istream &istr, char delimiter)
     {
-        char *cstr;
-
-        string tmp;
-
         if (prompt != nullptr)
-        {
             cout << prompt;
-        }
-
-        getline(istr, tmp);
-
-        cstr = new char[tmp.length() + 1];
-
-        strcpy(cstr, tmp.c_str());
-        
-        return cstr;
+        string input;
+        getline(istr, input);
+        int len = input.length();
+        char* str = new char[len + 1];
+        strcpy(str, input.c_str());
+        str[len] = '\0';
+        return str;
     }
 
     int getInt(int min, int max, const char *prompt, const char *errorMessage, bool showRangeAtError)
