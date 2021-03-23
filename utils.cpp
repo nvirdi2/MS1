@@ -1,7 +1,7 @@
 // Name: Navdeep Virdi
 // Seneca email: nvirdi2@myseneca.ca
 // Student ID: 166485193
-// Date: March 22, 2021
+// Date: March 16, 2021
 
 //I have done all the coding by myself and only copied the code that my professor provided to complete my workshops and assignments.
 
@@ -119,15 +119,22 @@ namespace sdds
 
     char *getcstr(const char *prompt, istream &istr, char delimiter)
     {
+        char *cstr;
+
+        string tmp;
+
         if (prompt != nullptr)
+        {
             cout << prompt;
-        string input;
-        getline(istr, input);
-        int len = input.length();
-        char* str = new char[len + 1];
-        strcpy(str, input.c_str());
-        str[len] = '\0';
-        return str;
+        }
+
+        getline(istr, tmp);
+
+        cstr = new char[tmp.length() + 1];
+
+        strcpy(cstr, tmp.c_str());
+        
+        return cstr;
     }
 
     int getInt(int min, int max, const char *prompt, const char *errorMessage, bool showRangeAtError)
